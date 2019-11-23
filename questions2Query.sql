@@ -1,0 +1,1 @@
+SELECT * FROM Customers AS C INNER JOIN Customer_Addresses AS CA ON CA.CUSTOMER_ID = C.ID;

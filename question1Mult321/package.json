@@ -1,0 +1,16 @@
+{
+    "name": "mult321",
+    "version": "1.0.0",
+    "description": "",
+    "main": "mult321.js",
+    "scripts": {
+        "start": "node mult321.js",
+        "test": "jest"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "jest": "^24.9.0"
+    }
+}
