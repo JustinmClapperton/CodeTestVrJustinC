@@ -58,12 +58,12 @@ class AddressController extends ControllerBase{
         }
 
         try {
-            const theAddress = await AddressService.getAddress(id);
+            const address = await AddressService.getAddress(id);
 
-            if (!theAddress) {
+            if (!address) {
                 return this.sendError(404, 'Address not found', res)
             } else {
-                return this.sendSuccess(200, 'Address found', res, theAddress)
+                return this.sendSuccess(200, 'Address found', res, address)
             }
         } catch (error) {
             return this.sendError(400, error.message, res)

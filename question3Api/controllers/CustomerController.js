@@ -55,12 +55,12 @@ class CustomerController extends ControllerBase{
         }
 
         try {
-            const theCustomer = await CustomerService.getACustomer(id);
+            const customer = await CustomerService.getACustomer(id);
 
-            if (!theCustomer) {
+            if (!customer) {
                 return this.sendError(404, 'Customer not found', res)
             } else {
-                return this.sendSuccess(200, 'Customer found', res, theCustomer)
+                return this.sendSuccess(200, 'Customer found', res, customer)
             }
         } catch (error) {
             return this.sendError(400, error.message, res)

@@ -1,5 +1,6 @@
 const request = require('supertest')
 const app = require('../index')
+const db = require('../db/models/index')
 describe('Customer Endpoints', () => {
     it('should create a new customer', async () => {
         const res = await request(app)
@@ -9,6 +10,9 @@ describe('Customer Endpoints', () => {
             })
         expect(res.statusCode).toEqual(201)
         expect(res.body.message).toEqual("Customer Created")
+        const customer = await db.Customer.findOne({where:{id: res.body.data.id}})
+        expect(customer).not.toBeNull()
+        expect(customer.NAME).toEqual("Test")
     })
 
     it('should get all customer', async () => {
@@ -47,24 +51,28 @@ describe('Customer Endpoints', () => {
             expect(res.statusCode).toEqual(200)
             expect(res.body.message).toEqual("Customer updated")
             expect(res.body.data.NAME).toEqual('Test2')
+            let customer = await db.Customer.findOne({where:{ id: customerRes.body.data.id}})
+            expect(customer.NAME).toEqual("Test2")
         })
 
         it('should delete customer', async () => {
             const res = await request(app)
-                .delete('/api/v1/customers/1')
+                .delete(`/api/v1/customers/${customerRes.body.data.id}`)
                 .send({
                     NAME: "Test",
                 })
             expect(res.statusCode).toEqual(200)
             expect(res.body.message).toEqual("Customer deleted")
             expect(res.body).toHaveProperty('data')
+            let customer = await db.Customer.findOne({where:{ id: customerRes.body.data.id}})
+            expect(customer).toBeNull()
         })
     })
 
     describe('Customer doesnt exists', () => {
         it('should not get a customer', async () => {
             const res = await request(app)
-                .get('/api/v1/customers/1')
+                .get('/api/v1/customers/999')
                 .send()
             expect(res.statusCode).toEqual(404)
             expect(res.body.message).toEqual("Customer not found")
@@ -72,7 +80,7 @@ describe('Customer Endpoints', () => {
 
         it('should update a customer', async () => {
             const res = await request(app)
-                .put(`/api/v1/customers/99`)
+                .put(`/api/v1/customers/999`)
                 .send({
                     NAME: "Test2",
                 })
@@ -82,7 +90,7 @@ describe('Customer Endpoints', () => {
 
         it('should delete customer', async () => {
             const res = await request(app)
-                .delete('/api/v1/customers/1')
+                .delete('/api/v1/customers/999')
                 .send({
                     NAME: "Test",
                 })
@@ -92,7 +100,7 @@ describe('Customer Endpoints', () => {
     })
 })
 
-describe('Addresses Endpoints', () => {
+describe('Address Endpoints', () => {
     let customerRes = null
     beforeEach(async () => {
         customerRes = null
@@ -102,7 +110,7 @@ describe('Addresses Endpoints', () => {
                 NAME: "Test",
             })
     })
-    it('should create a new addresses', async () => {
+    it('should create a new address', async () => {
         console.log(JSON.stringify(customerRes.body))
         const res = await request(app)
             .post(`/api/v1/customers/${customerRes.body.data.id}/addresses`)
@@ -114,9 +122,12 @@ describe('Addresses Endpoints', () => {
         console.log(JSON.stringify(res))
         expect(res.statusCode).toEqual(201)
         expect(res.body.message).toEqual("Address Created")
+        const address = await db.Customer_Addresses.findOne({where:{id: res.body.data.id}})
+        expect(address).not.toBeNull()
+        expect(address.STREET_ADDRESS).toEqual("Test")
     })
 
-    describe('addresses exists', () => {
+    describe('address exists', () => {
         let addressesRes = null
         beforeEach(async () => {
             addressesRes = null
@@ -138,6 +149,8 @@ describe('Addresses Endpoints', () => {
         })
 
         it('should get an address', async () => {
+            console.log(JSON.stringify(customerRes.body))
+            console.log(JSON.stringify(addressesRes.body))
             const res = await request(app)
                 .get(`/api/v1/customers/${customerRes.body.data.id}/addresses/${addressesRes.body.data.id}`)
                 .send()
@@ -155,15 +168,19 @@ describe('Addresses Endpoints', () => {
             expect(res.statusCode).toEqual(200)
             expect(res.body.message).toEqual("Address updated")
             expect(res.body.data.STREET_ADDRESS).toEqual('Test2')
+            const address = await db.Customer_Addresses.findOne({where:{id: addressesRes.body.data.id}})
+            expect(address.STREET_ADDRESS).toEqual("Test2")
         })
 
-        it('should delete addresses', async () => {
+        it('should delete address', async () => {
             const res = await request(app)
                 .delete(`/api/v1/customers/${customerRes.body.data.id}/addresses/${addressesRes.body.data.id}`)
                 .send()
             expect(res.statusCode).toEqual(200)
             expect(res.body.message).toEqual("Address deleted")
             expect(res.body).toHaveProperty('data')
+            const address = await db.Customer_Addresses.findOne({where:{id: addressesRes.body.data.id}})
+            expect(address).toBeNull()
         })
     })
 
@@ -177,7 +194,7 @@ describe('Addresses Endpoints', () => {
             expect(res.body.message).toEqual("No Addresses")
         })
 
-        it('should not get an addresses', async () => {
+        it('should not get an address', async () => {
             const res = await request(app)
                 .get(`/api/v1/customers/${customerRes.body.data.id}/addresses/99`)
                 .send()

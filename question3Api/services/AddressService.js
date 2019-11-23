@@ -41,13 +41,11 @@ class AddressService {
 
     static async getAddress(id) {
         try {
-            const theAddress = await db.Customer_Addresses.findOne({
+            return await db.Customer_Addresses.findOne({
                 where: {
                     id: Number(id),
                 }
             });
-
-            return theAddress;
         } catch (error) {
             throw error;
         }
@@ -58,10 +56,9 @@ class AddressService {
             const AddressToDelete = await db.Customer_Addresses.findOne({ where: { id: Number(id) } });
 
             if (AddressToDelete) {
-                const deletedAddress = await db.Customer_Addresses.destroy({
+                return await db.Customer_Addresses.destroy({
                     where: { id: Number(id) }
                 });
-                return deletedAddress;
             }
             return null;
         } catch (error) {
