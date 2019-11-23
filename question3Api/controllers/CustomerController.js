@@ -3,7 +3,6 @@ let ControllerBase = require('./ControllerBase')
 
 class CustomerController extends ControllerBase{
     async getCustomers(req, res) {
-        console.log(this)
         try {
             const allCustomers = await CustomerService.getCustomers();
             if (allCustomers.length > 0) {
